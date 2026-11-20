@@ -346,7 +346,7 @@ export default async function OverviewPage({ searchParams }: PageProps) {
           <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-3 shadow-xs">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Quotation vs Converted Orders</h3>
+                <h3 className="text-sm font-bold text-slate-900">Quotation Trend</h3>
                 <p className="text-[11px] text-slate-500 font-medium">Quote volume, conversion count & value</p>
               </div>
               <Link href="/sales/quotations" className="text-xs text-orange-600 hover:text-orange-700 font-semibold">
@@ -400,7 +400,7 @@ export default async function OverviewPage({ searchParams }: PageProps) {
           <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-3 shadow-xs">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Field Visit Activity (Visit DB)</h3>
+                <h3 className="text-sm font-bold text-slate-900">Field Visit Activity</h3>
                 <p className="text-[11px] text-slate-500 font-medium">Completed customer meetings vs pending follow-ups</p>
               </div>
               <Link href="/visits" className="text-xs text-orange-600 hover:text-orange-700 font-semibold">
@@ -435,7 +435,7 @@ export default async function OverviewPage({ searchParams }: PageProps) {
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
               <FileSpreadsheet className="w-4 h-4 text-orange-600" />
-              Latest Quotations (Zoho Books)
+              Latest Quotations 
             </h3>
             <Link
               href={`/sales/quotations?period=${filterParams.period}${filterParams.organizationId ? `&organizationId=${filterParams.organizationId}` : ""}`}
@@ -486,7 +486,7 @@ export default async function OverviewPage({ searchParams }: PageProps) {
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
               <MapPin className="w-4 h-4 text-emerald-600" />
-              Recent Customer Visits (Visit DB)
+              Recent Customer Visits 
             </h3>
             <Link
               href={`/visits?period=${filterParams.period}${filterParams.organizationId ? `&organizationId=${filterParams.organizationId}` : ""}`}

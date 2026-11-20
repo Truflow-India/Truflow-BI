@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { RefreshCw, Building2, Calendar, X, LogOut } from "lucide-react";
+import { RefreshCw, Building2, Calendar, X } from "lucide-react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
 import { getClientCookie, setClientCookie } from "@/lib/client-cookies";
 
 function formatDisplayDate(dateStr: string): string {
@@ -418,7 +417,7 @@ export function Header({
       <div className="flex items-center gap-4">
         <div className="hidden sm:flex flex-col text-right">
           <span className="text-[11px] font-medium text-slate-600">{syncStatusText}</span>
-          <span className="text-[10px] text-slate-400">PostgreSQL Dual DB</span>
+          {/* <span className="text-[10px] text-slate-400">PostgreSQL Dual DB</span> */}
         </div>
 
         <button
@@ -433,24 +432,6 @@ export function Header({
           <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin" : ""}`} />
           <span>{isSyncing ? "Syncing..." : "Sync"}</span>
         </button>
-
-        {/* User Pill with Sign Out */}
-        <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-          <div className="w-8 h-8 rounded-lg bg-orange-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
-            SA
-          </div>
-          <div className="hidden xl:flex flex-col text-left">
-            <span className="text-xs font-bold text-slate-800 leading-tight">System Administrator</span>
-            <span className="text-[10px] text-slate-400 font-medium">admin@truflow.com</span>
-          </div>
-          <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
-            title="Sign out of dashboard"
-            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer ml-1"
-          >
-            <LogOut className="w-4 h-4" />
-          </button>
-        </div>
       </div>
     </header>
   );

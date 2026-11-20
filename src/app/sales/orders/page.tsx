@@ -63,9 +63,6 @@ export default async function SalesOrdersPage({ searchParams }: PageProps) {
           <ShoppingCart className="w-6 h-6 text-orange-600" />
           Sales Orders Intelligence
         </h1>
-        <p className="text-xs text-slate-500 mt-1">
-          Confirmed order bookings, fulfillment tracking, and sales backlog from Zoho Books
-        </p>
       </div>
 
       {/* KPI Cards */}

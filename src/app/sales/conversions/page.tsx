@@ -37,9 +37,6 @@ export default async function OrderConversionPage({ searchParams }: PageProps) {
           <GitCommitHorizontal className="w-6 h-6 text-orange-600" />
           Order Conversion & Lost Opportunity Analysis
         </h1>
-        <p className="text-xs text-slate-500 mt-1">
-          Full pipeline conversion funnel, volume vs value conversion rates, and lost deal forensics
-        </p>
       </div>
 
       {/* Summary KPI Cards */}

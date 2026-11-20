@@ -51,9 +51,7 @@ export default async function QuotationAnalyticsPage({ searchParams }: PageProps
             <FileSpreadsheet className="w-6 h-6 text-orange-600" />
             Quotation Analytics & Performance
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Detailed quote volume, approval status, salesperson conversion velocity, and audit trail
-          </p>
+
         </div>
       </div>
 

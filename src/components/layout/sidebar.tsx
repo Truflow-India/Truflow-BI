@@ -17,7 +17,9 @@ import {
   ChevronRight,
   Activity,
   Target,
+  LogOut,
 } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 interface NavItem {
   name: string;
@@ -198,9 +200,34 @@ export function Sidebar({
         })}
       </div>
 
-      {/* System Status Footer Card */}
-      <div className="p-3 border-t border-slate-200 bg-slate-50/50">
-        <div className="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center justify-between shadow-xs">
+      {/* Footer: User Profile & System Status */}
+      <div className="p-3 border-t border-slate-200 bg-slate-50/60 space-y-2">
+        {/* User Profile Card with Sign Out */}
+        <div className="p-2.5 rounded-xl bg-white border border-slate-200/90 flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-lg bg-orange-600 text-white flex items-center justify-center font-bold text-xs shadow-xs flex-shrink-0">
+              SA
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-xs font-bold text-slate-800 leading-tight truncate">
+                System Administrator
+              </span>
+              <span className="text-[10px] text-slate-400 font-medium truncate">
+                admin@truflow.com
+              </span>
+            </div>
+          </div>
+          <button
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            title="Sign out of dashboard"
+            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer flex-shrink-0"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Dual DB Sync Status */}
+        {/* <div className="p-2 rounded-xl bg-white border border-slate-200/90 flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-2">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -214,7 +241,7 @@ export function Sidebar({
           >
             Health
           </Link>
-        </div>
+        </div> */}
       </div>
     </aside>
   );

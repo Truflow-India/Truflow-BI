@@ -288,9 +288,6 @@ export function TargetDashboard({ initialData }: TargetDashboardProps) {
             </span>
             Sales Targets & 12-Month Quotation Report
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Annual salesperson targets fetched from Visit DB, classified by TruFlow &amp; Zeetork, split into 12 months, and measured against quotation creation.
-          </p>
         </div>
 
         {/* Action Controls: Export & Print */}
