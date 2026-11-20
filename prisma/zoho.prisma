@@ -1,0 +1,209 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("ZOHO_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/zoho-client"
+}
+
+model Quotation {
+  id                         String    @id @default(uuid())
+  zohoQuotationId            String    @unique
+  organizationId             String
+  quotationNumber            String
+  referenceNumber            String?
+  customerId                 String
+  customerName               String
+  companyName                String?
+  salespersonId              String?
+  salespersonName            String?
+  quotationDate              DateTime
+  expiryDate                 DateTime?
+  totalAmount                Float
+  originalAmount             Float?
+  currencyCode               String    @default("INR")
+  exchangeRate               Float     @default(1.0)
+  businessType               String    @default("Domestic")
+  isIntercompany             Boolean   @default(false)
+  status                     String    // pending_approval, approved, invoiced, declined, draft, etc.
+  offerStatus                String?   // Open, Won, Lost, etc.
+  convertedSalesOrderId      String?
+  convertedSalesOrderNumber  String?
+  isConverted                Boolean   @default(false)
+  isLost                     Boolean   @default(false)
+  lostReason                 String?
+  lostDate                   DateTime?
+  lastModifiedTime           DateTime
+  createdAt                  DateTime  @default(now())
+  updatedAt                  DateTime  @updatedAt
+
+  @@index([organizationId])
+  @@index([quotationDate])
+  @@index([status])
+  @@index([salespersonName])
+  @@index([customerId])
+  @@index([isConverted])
+  @@index([isLost])
+  @@index([businessType])
+  @@index([isIntercompany])
+}
+
+model SalesOrder {
+  id                    String    @id @default(uuid())
+  zohoSalesOrderId      String    @unique
+  organizationId        String
+  salesOrderNumber      String
+  referenceNumber       String?
+  customerId            String
+  customerName          String
+  companyName           String?
+  salespersonId         String?
+  salespersonName       String?
+  orderDate             DateTime
+  deliveryDate          DateTime?
+  totalAmount           Float
+  originalAmount        Float?
+  currencyCode          String    @default("INR")
+  exchangeRate          Float     @default(1.0)
+  businessType          String    @default("Domestic")
+  isIntercompany        Boolean   @default(false)
+  status                String    // approved, open, closed, void, draft
+  orderStatus           String?
+  invoicedStatus        String?
+  associatedQuotationId String?
+  lastModifiedTime      DateTime
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([organizationId])
+  @@index([orderDate])
+  @@index([status])
+  @@index([salespersonName])
+  @@index([customerId])
+  @@index([businessType])
+  @@index([isIntercompany])
+}
+
+model Invoice {
+  id               String    @id @default(uuid())
+  zohoInvoiceId    String    @unique
+  organizationId   String
+  invoiceNumber    String
+  referenceNumber  String?
+  customerId       String
+  customerName     String
+  companyName      String?
+  salespersonId    String?
+  salespersonName  String?
+  invoiceDate      DateTime
+  dueDate          DateTime?
+  totalAmount      Float
+  originalAmount   Float?
+  balance          Float     @default(0)
+  currencyCode     String    @default("INR")
+  exchangeRate     Float     @default(1.0)
+  businessType     String    @default("Domestic")
+  isIntercompany   Boolean   @default(false)
+  status           String    // paid, unpaid, overdue, partly_paid, void, draft
+  lastModifiedTime DateTime
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([organizationId])
+  @@index([invoiceDate])
+  @@index([status])
+  @@index([salespersonName])
+  @@index([customerId])
+  @@index([businessType])
+  @@index([isIntercompany])
+}
+
+model Payment {
+  id               String    @id @default(uuid())
+  zohoPaymentId    String    @unique
+  organizationId   String
+  paymentNumber    String?
+  customerId       String
+  customerName     String?
+  invoiceNumbers   String?
+  paymentDate      DateTime
+  amount           Float
+  paymentMode      String?
+  status           String    @default("paid")
+  lastModifiedTime DateTime
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([organizationId])
+  @@index([paymentDate])
+  @@index([customerId])
+}
+
+model ZohoCustomer {
+  id               String    @id @default(uuid())
+  zohoCustomerId   String    @unique
+  organizationId   String
+  customerName     String
+  companyName      String?
+  email            String?
+  phone            String?
+  mobile           String?
+  createdDate      DateTime?
+  lastModifiedTime DateTime
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([organizationId])
+  @@index([customerName])
+  @@index([email])
+  @@index([phone])
+}
+
+model SyncLog {
+  id               String    @id @default(uuid())
+  module           String    // "quotations", "salesorders", "invoices", "payments", "customers", "all"
+  organizationId   String?
+  startedAt        DateTime  @default(now())
+  completedAt      DateTime?
+  status           String    // "IN_PROGRESS", "SUCCESS", "FAILED"
+  recordsProcessed Int       @default(0)
+  recordsCreated   Int       @default(0)
+  recordsUpdated   Int       @default(0)
+  recordsFailed    Int       @default(0)
+  errorMessage     String?
+  triggerType      String    @default("MANUAL") // "SCHEDULED", "MANUAL", "INITIAL"
+  createdAt        DateTime  @default(now())
+
+  @@index([module])
+  @@index([status])
+  @@index([startedAt])
+}
+
+model CustomerMapping {
+  id              String    @id @default(uuid())
+  zohoCustomerId  String    @unique
+  visitCustomerId String
+  matchType       String    // "PHONE_EXACT", "EMAIL_EXACT", "NAME_EXACT", "MANUAL"
+  confidence      Float     @default(1.0)
+  verified        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([visitCustomerId])
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("ADMIN")
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+}
+

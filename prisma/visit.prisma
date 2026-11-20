@@ -1,0 +1,273 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/visit-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("VISIT_DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  password      String
+  phone         String?
+  role          String         @default("EMPLOYEE")
+  status        String         @default("ACTIVE")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  employee      Employee?
+  notifications Notification[]
+}
+
+model Company {
+  id             String               @id @default(uuid())
+  name           String
+  code           String               @unique
+  logo           String?
+  address        String?
+  phone          String?
+  email          String?
+  website        String?
+  gstNumber      String?
+  status         String               @default("ACTIVE")
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  assignments    CustomerAssignment[]
+  emailTemplates EmailTemplate[]
+  employees      EmployeeCompany[]
+  products       Product[]
+  sales          Sale[]
+  visits         Visit[]
+}
+
+model Employee {
+  id          String               @id @default(uuid())
+  userId      String               @unique
+  designation String?
+  department  String?
+  status      String               @default("ACTIVE")
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  target      Float?               @default(0)
+  truflowTarget Float?             @default(0)
+  zeetorkTarget Float?             @default(0)
+  assignments CustomerAssignment[]
+  user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companies   EmployeeCompany[]
+  sales       Sale[]
+  visits      Visit[]
+}
+
+model EmployeeCompany {
+  id          String    @id @default(uuid())
+  employeeId  String
+  companyId   String
+  role        String?
+  isPrimary   Boolean   @default(false)
+  status      String    @default("ACTIVE")
+  joiningDate DateTime?
+  leavingDate DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  target      Float?    @default(0)
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  employee    Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, companyId])
+}
+
+model Customer {
+  id          String               @id @default(uuid())
+  name        String
+  companyName String?
+  phone       String               @unique
+  email       String?
+  address     String?
+  city        String?
+  state       String?
+  country     String?
+  pincode     String?
+  website     String?
+  industry    String?
+  remarks     String?
+  createdBy   String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  contacts    Contact[]
+  assignments CustomerAssignment[]
+  followUps   FollowUp[]
+  locations   Location[]
+  sales       Sale[]
+  visits      Visit[]
+}
+
+model Location {
+  id         String    @id @default(uuid())
+  customerId String
+  name       String
+  code       String?
+  type       String?
+  address    String?
+  city       String?
+  state      String?
+  country    String?
+  pincode    String?
+  phone      String?
+  email      String?
+  status     String    @default("ACTIVE")
+  notes      String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  contacts   Contact[]
+  customer   Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  visits     Visit[]
+}
+
+model Contact {
+  id          String    @id @default(uuid())
+  customerId  String
+  name        String
+  designation String?
+  department  String?
+  mobile      String?
+  phone       String?
+  email       String?
+  notes       String?
+  isPrimary   Boolean   @default(false)
+  status      String    @default("ACTIVE")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  locationId  String?
+  customer    Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  location    Location? @relation(fields: [locationId], references: [id])
+  visits      Visit[]
+}
+
+model CustomerAssignment {
+  id             String   @id @default(uuid())
+  customerId     String
+  companyId      String
+  employeeId     String
+  status         String   @default("ACTIVE")
+  reason         String?
+  remarks        String?
+  assignmentDate DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  company        Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  employee       Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+}
+
+model Visit {
+  id               String    @id @default(uuid())
+  customerId       String
+  companyId        String
+  employeeId       String
+  visitDate        DateTime
+  visitTime        String?
+  visitType        String    @default("COLD_VISIT")
+  location         String?
+  latitude         Float?
+  longitude        Float?
+  status           String    @default("PENDING")
+  visitReport      String?
+  nextFollowupDate DateTime?
+  attachment       String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  contactId        String?
+  locationId       String?
+  company          Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  contact          Contact?  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  customer         Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  employee         Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  customerLocation Location? @relation(fields: [locationId], references: [id], onDelete: Cascade)
+}
+
+model Product {
+  id        String     @id @default(uuid())
+  companyId String
+  name      String
+  sku       String?
+  category  String?
+  price     Float
+  tax       Float      @default(0)
+  status    String     @default("ACTIVE")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  saleItems SaleItem[]
+}
+
+model Sale {
+  id            String     @id @default(uuid())
+  customerId    String
+  companyId     String
+  employeeId    String
+  invoiceNumber String
+  invoiceDate   DateTime
+  amount        Float
+  tax           Float      @default(0)
+  discount      Float      @default(0)
+  grandTotal    Float
+  paymentStatus String     @default("PENDING")
+  remarks       String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  company       Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer      Customer   @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  employee      Employee   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  items         SaleItem[]
+
+  @@unique([companyId, invoiceNumber])
+}
+
+model SaleItem {
+  id        String  @id @default(uuid())
+  saleId    String
+  productId String
+  quantity  Int
+  price     Float
+  total     Float
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sale      Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+}
+
+model EmailTemplate {
+  id          String   @id @default(uuid())
+  companyId   String
+  name        String
+  subject     String
+  body        String
+  senderEmail String?
+  status      String   @default("ACTIVE")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model FollowUp {
+  id         String   @id @default(uuid())
+  customerId String
+  date       DateTime
+  notes      String?
+  status     String   @default("PENDING")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
